@@ -2,8 +2,10 @@ import math
 import numpy as np
 import sympy as sy
 from sympy.parsing.sympy_parser import parse_expr
+from sympy import init_printing
 
 def main():
+    init_printing()
     logPowerSeries(5,3)
 
 def logPowerSeries(p, mod):
@@ -24,8 +26,9 @@ def logPowerSeries(p, mod):
         coefficientsDict['l{}'.format(i+1)] = logCoefficients(coefficientsDict, coefficientsNames, vNames, 5, i+1)
     logx = ""
     for i in range(len(coefficientsNames)):
-        logx += "({}*x^{}) + ".format(coefficientsDict[coefficientsNames[i]],p**i)
-    print(logx[:-2])
+        logx += "({}*x**{}) + ".format(coefficientsDict[coefficientsNames[i]],p**i)
+    powerSeries = logx[:-2]
+    print(sy.latex(parse_expr(powerSeries)))
 
 def logCoefficients(coefficientsDict, coefficientsNames, vNames, p, index):
     sumString = ""
@@ -46,7 +49,7 @@ def logCoefficients(coefficientsDict, coefficientsNames, vNames, p, index):
     newCoefficient = sy.solveset(sy.Eq(lhsExpression, rhsExpression),variable)
     newCoefficientList = list(newCoefficient)
     #print("newCoefficientasfasd: {}".format(newCoefficientList[0]))
-    return newCoefficientList[0]
+    return "({})".format(newCoefficientList[0])
 
 
 
