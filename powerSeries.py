@@ -1,12 +1,15 @@
 import math
 import numpy as np
 import sympy as sy
+import pdb
 from sympy.parsing.sympy_parser import parse_expr
 from sympy import init_printing
 
 def main():
     init_printing()
-    logPowerSeries(5,3)
+    coefficientsList = logPowerSeries(5,3)
+    a=["10","4","-3","5"]
+    inversePowerSeries(a)
 
 def logPowerSeries(p, mod):
     x = sy.symbols('x')
@@ -18,17 +21,22 @@ def logPowerSeries(p, mod):
     vNames = []
     coefficientsNames.append('l0')
     vNames.append('v0')
+    coefficientsList = ['1']
     for i in range(mod-1):
         sy.var('l{}'.format(i+1))
         sy.var('v{}'.format(i+1))
         coefficientsNames.append('l{}'.format(i+1))
         vNames.append('v{}'.format(i+1))
-        coefficientsDict['l{}'.format(i+1)] = logCoefficients(coefficientsDict, coefficientsNames, vNames, 5, i+1)
+        newCoefficient = logCoefficients(coefficientsDict, coefficientsNames, vNames, 5, i+1)
+        coefficientsDict['l{}'.format(i+1)] = newCoefficient
+        coefficientsList.append(newCoefficient)
+    print(coefficientsList)
     logx = ""
     for i in range(len(coefficientsNames)):
         logx += "({}*x**{}) + ".format(coefficientsDict[coefficientsNames[i]],p**i)
     powerSeries = logx[:-2]
     print(sy.latex(parse_expr(powerSeries)))
+    return coefficientsList
 
 def logCoefficients(coefficientsDict, coefficientsNames, vNames, p, index):
     sumString = ""
@@ -50,6 +58,22 @@ def logCoefficients(coefficientsDict, coefficientsNames, vNames, p, index):
     newCoefficientList = list(newCoefficient)
     #print("newCoefficientasfasd: {}".format(newCoefficientList[0]))
     return "({})".format(newCoefficientList[0])
+
+def inversePowerSeries(coefficientsList):
+    firstCoefficient = parse_expr(coefficientsList[0])
+    inverseCoefficientsList = [str(1/firstCoefficient)]
+    #pdb.set_trace()
+    for n in range(1,len(coefficientsList)):
+        newInverseCoefficient = ""
+        for i in range(n):
+            newInverseCoefficient += "({}*{})+".format(coefficientsList[i+1], inverseCoefficientsList[n-(i+1)])
+        newInverseCoefficient = "-{}*({})".format(inverseCoefficientsList[0], newInverseCoefficient[:-1])
+        inverseCoefficientsList.append(newInverseCoefficient)
+
+
+    for i in range(len(inverseCoefficientsList)):
+         print(parse_expr(inverseCoefficientsList[i]))
+
 
 
 
